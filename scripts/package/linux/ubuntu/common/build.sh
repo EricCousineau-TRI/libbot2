@@ -32,9 +32,11 @@ fi
 pushd /tmp
 # LCM is built and package as part of this process as there is no
 # official LCM package.
-git clone --branch v1.4.0 --config advice.detachedHead=false --depth 1 https://github.com/lcm-proj/lcm.git
+git clone --config advice.detachedHead=false https://github.com/lcm-proj/lcm.git
 
 pushd lcm
+git checkout abdd8a292fcaf6e331f0449778e275890e12811a
+
 cat << 'EOF' > lcm-cmake.patch
 diff --git a/lcm-cmake/cpack.cmake b/lcm-cmake/cpack.cmake
 index 253ab64..52b1c7b 100644
@@ -77,7 +79,7 @@ cmake -DBUILD_SHARED_LIBS:BOOL=ON \
       -DCMAKE_C_FLAGS:STRING="$(dpkg-buildflags --get CFLAGS) $(dpkg-buildflags --get CPPFLAGS) -Wno-deprecated-declarations" \
       -DCMAKE_SHARED_LINKER_FLAGS:STRING="$(dpkg-buildflags --get LDFLAGS)" \
       -DCPACK_DEBIAN_PACKAGE_VERSION:STRING=1.4.0 \
-      -DCPACK_DEBIAN_PACKAGE_RELEASE:STRING=2 \
+      -DCPACK_DEBIAN_PACKAGE_RELEASE:STRING=gabdd8a2 \
       -DCPACK_DEBIAN_PACKAGE_MAINTAINER:STRING="Kitware <kitware@kitware.com>" \
       -DCPACK_PACKAGING_INSTALL_PREFIX:PATH=/opt/lcm/1.4.0 \
       -DCMAKE_C_FLAGS:STRING=-Wl,-rpath,\$ORIGIN/../lib \
@@ -90,7 +92,7 @@ cmake -DBUILD_SHARED_LIBS:BOOL=ON \
 make
 cpack -G DEB
 popd
-mv lcm-build/packages/lcm_1.4.0-2_amd64.deb lcm_1.4.0-2_amd64.deb
+mv lcm-build/packages/lcm_1.4.0-gabdd8a2_amd64.deb lcm_1.4.0-gabdd8a2_amd64.deb
 rm -rf lcm-build
 
 # Install the package instead of running `make install`. This
@@ -98,7 +100,7 @@ rm -rf lcm-build
 # is built and its package is installed. This is necessary because
 # some scripts such as `bot-spy` rely on `lcm-spy` and its path
 # is hardcoded at compile time.
-dpkg -i lcm_1.4.0-2_amd64.deb
+dpkg -i lcm_1.4.0-gabdd8a2_amd64.deb
 
 # Configure, compile, and package libbot2
 mkdir libbot2-build
